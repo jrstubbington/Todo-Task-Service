@@ -1,0 +1,67 @@
+spring:
+  main:
+    banner-mode: off
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  #  http:
+  #    converters:
+  #      preferred-json-mapper: gson
+
+  ## Spring Datasource passed in via environment variables
+  datasource:
+    url:
+    username:
+    password:
+
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    properties:
+      ## Hibernate Properties
+      hibernate:
+        enable_lazy_load_no_trans: false
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        ## This is important
+        # Hibernate ddl auto (create, create-drop, validate, update)
+        ddl-auto: validate
+
+server:
+  shutdown: graceful
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    doc-expansion: none
+    operationsSorter: method
+    tagsSorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+flyway:
+  enabled: true
+  baselineOnMigrate: false
+
+kafka:
+  bootstrapAddress: #set via env parameter
+  groupId: task-service
+
+logging:
+  config: classpath:log4j2.xml
+  level:
+    root: INFO
+    org:
+      example: TRACE
+      apache:
+        catalina: WARN
+        coyote: WARN
+      springframework: WARN
+
+project:
+  package: ^project.groupId^
+  version: ^project.version^
