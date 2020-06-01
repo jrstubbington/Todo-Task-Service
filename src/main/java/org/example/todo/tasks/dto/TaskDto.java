@@ -12,19 +12,27 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode
-public class CategoryDto implements DtoEntity {
+public class TaskDto implements DtoEntity {
 
-	private UUID uuid;
-
-	private UUID workspaceUuid;
+	private final UUID uuid = UUID.randomUUID();
 
 	private String name;
 
 	private String description;
 
-	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
-	private UUID createdByUserUuid;
+	private String status;
 
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private OffsetDateTime createdDate;
+
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
+	private UUID createdByUserUuid;
+
+	private UUID assignedToUserUuid;
+
+	private UUID workspaceUuid;
+
+	private int priority;
+
+	private OffsetDateTime reminderDate;
 }

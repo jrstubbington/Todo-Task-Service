@@ -20,6 +20,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,11 +49,15 @@ public class Category implements Serializable {
 	@NotBlank
 	@NotNull
 	@Size(max = 50)
-	private String title;
+	private String name;
 
 	@NotNull
-	@Size(max = 50)
+	@Size(max = 254)
 	private String description;
+
+	private UUID createdByUserUuid;
+
+	private OffsetDateTime createdDate;
 
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude

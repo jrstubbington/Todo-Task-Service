@@ -38,6 +38,14 @@ springdoc:
     tagsSorter: alpha
 
 management:
+  health:
+    probes:
+      enabled: true
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: db
   endpoints:
     web:
       exposure:
@@ -52,9 +60,9 @@ kafka:
   groupId: task-service
 
 logging:
-  config: classpath:log4j2.xml
+  config: classpath:log4j2-json.xml
   level:
-    root: INFO
+    root: ERROR
     org:
       example: TRACE
       apache:

@@ -8,14 +8,17 @@ import org.example.todo.tasks.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 @Slf4j
+@Profile("local")
 public class Setup {
 
 	@Autowired
@@ -29,9 +32,24 @@ public class Setup {
 	public CommandLineRunner demo() {
 		return args -> {
 			try {
-				Category category = new Category();
+				UUID workspaceUuid = UUID.randomUUID();
+				UUID userUuid = UUID.randomUUID();
 
-				Task task = new Task();
+				Category category = Category.builder()
+						.name("My Test Category")
+						.description("This is a testing category for testing")
+						.createdByUserUuid(userUuid)
+						.workspaceUuid(workspaceUuid)
+						.build();
+
+				Task task = Task.builder()
+						.name("My Test Task")
+						.description("testing description")
+						.assignedToUserUuid(userUuid)
+						.createdByUserUuid(userUuid)
+						.workspaceUuid(workspaceUuid)
+						.status("active")
+						.build();
 
 				Set<Task> newTasks = new HashSet<>();
 				newTasks.add(task);
