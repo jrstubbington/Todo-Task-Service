@@ -75,10 +75,12 @@ public class Task implements Serializable {
 
 	private OffsetDateTime createdDate;
 
+	@NotNull
 	private UUID createdByUserUuid;
 
 	private UUID assignedToUserUuid;
 
+	@NotNull
 	private UUID workspaceUuid;
 
 	private int priority;

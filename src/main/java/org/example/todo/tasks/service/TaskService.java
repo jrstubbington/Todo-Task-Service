@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,6 +33,13 @@ public class TaskService {
 	@Transactional
 	public Task createTask() {
 		return null;
+	}
+
+	@Transactional
+	public void reassignAllUserTasks(UUID assignedUUID, UUID newUuid) {
+		Set<Task> assignedTasks = taskRepository.findDistinctByAssignedToUserUuid(assignedUUID);
+		assignedTasks.forEach(task -> task.setAssignedToUserUuid(newUuid));
+		taskRepository.saveAll(assignedTasks);
 	}
 
 	@Autowired
