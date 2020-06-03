@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,6 +58,7 @@ public class Category implements Serializable {
 
 	private UUID createdByUserUuid;
 
+	@CreatedDate
 	private OffsetDateTime createdDate;
 
 	@ToString.Exclude

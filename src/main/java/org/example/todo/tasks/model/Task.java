@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -73,6 +74,7 @@ public class Task implements Serializable {
 	@Size(max = 10)
 	private String status;
 
+	@CreatedDate
 	private OffsetDateTime createdDate;
 
 	@NotNull

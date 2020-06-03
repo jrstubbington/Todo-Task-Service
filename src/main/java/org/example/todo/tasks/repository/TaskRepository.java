@@ -11,5 +11,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	Optional<Task> findByUuid(UUID uuid);
 
-	Set<Task> findDistinctByAssignedToUserUuid(UUID uuid);
+	Set<Task> findAllByAssignedToUserUuid(UUID uuid);
 }

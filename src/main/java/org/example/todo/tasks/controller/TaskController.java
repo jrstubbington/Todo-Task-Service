@@ -88,6 +88,17 @@ public class TaskController {
 		return ResponseEntity.ok(taskService.createTaskResponse(taskCreationRequest));
 	}
 
+	@Operation(summary = "Get a list of tasks for a specific user")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode  = "500", description = "Internal error has occurred", content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
+	})
+	@GetMapping(value = "/user/{uuid}", produces={"application/json"})
+	public ResponseEntity<ResponseContainer<TaskDto>> getTaskListByUserUuid(
+			@Parameter(description ="User uuid to get list of tasks with") @PathVariable UUID uuid) throws ResourceNotFoundException {
+		return ResponseEntity.ok(taskService.getAllTasksByUserUuidResponse(uuid));
+	}
+
 	@Autowired
 	public void setTaskService(TaskService taskService) {
 		this.taskService = taskService;

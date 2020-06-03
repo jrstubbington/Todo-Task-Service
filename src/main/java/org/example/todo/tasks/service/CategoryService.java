@@ -8,6 +8,7 @@ import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
 import org.example.todo.tasks.dto.CategoryDto;
+import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
 import org.example.todo.tasks.model.Task;
@@ -32,6 +33,8 @@ public class CategoryService {
 	private CategoryRepository categoryRepository;
 
 	private WorkspaceListener workspaceListener;
+
+	private UserListener userListener;
 
 	private KafkaProducer<CategoryDto> kafkaProducer;
 
@@ -73,37 +76,53 @@ public class CategoryService {
 		categoryRepository.saveAndFlush(category);
 	}
 
-
-
 	@Transactional
 	public Category createCategory(CategoryDto categoryDto) throws ResourceNotFoundException, ImproperResourceSpecification {
 		UUID workspaceUuid = categoryDto.getWorkspaceUuid();
 		if(Objects.nonNull(categoryDto.getUuid())) {
 			throw new ImproperResourceSpecification("Cannot specify UUID when creating new category");
 		}
-		if (Objects.nonNull(workspaceUuid) && workspaceListener.contains(workspaceUuid)) { //TODO: perform API call to verify if workspace actually doesn't exist if contains fails
-			Category category = Category.builder()
-					.name(categoryDto.getName())
-					.description(categoryDto.getDescription())
-					.createdByUserUuid(categoryDto.getCreatedByUserUuid())
-					.workspaceUuid(workspaceUuid)
-					.build();
-			Category savedCategory = categoryRepository.saveAndFlush(category);
 
-			kafkaProducer.sendMessage(KAFKA_TOPIC, KafkaOperation.UPDATE,
-					ResponseUtils.convertToDto(savedCategory, CategoryDto.class));
-
-			return savedCategory;
+		if (!userListener.contains(categoryDto.getCreatedByUserUuid())) {
+			throw new ResourceNotFoundException(String.format("user with id, %s could not be found to create category to.", categoryDto.getCreatedByUserUuid()));
 		}
-		else {
-
-			throw new ResourceNotFoundException(String.format("Could not find a workspace with UUID: %s", workspaceUuid));
+		if(!workspaceListener.contains(categoryDto.getWorkspaceUuid())) {
+			throw new ResourceNotFoundException(String.format("Workspace with id, %s could not be found to create category to.", categoryDto.getWorkspaceUuid()));
 		}
+
+		Category category = Category.builder()
+				.name(categoryDto.getName())
+				.description(categoryDto.getDescription())
+				.createdByUserUuid(categoryDto.getCreatedByUserUuid())
+				.workspaceUuid(workspaceUuid)
+				.build();
+		Category savedCategory = categoryRepository.saveAndFlush(category);
+
+		kafkaProducer.sendMessage(KAFKA_TOPIC, KafkaOperation.UPDATE,
+				ResponseUtils.convertToDto(savedCategory, CategoryDto.class));
+
+		return savedCategory;
+
+	}
+
+	@Transactional
+	public ResponseContainer<CategoryDto> createCategoryResponse(CategoryDto categoryDto) throws ResourceNotFoundException, ImproperResourceSpecification {
+		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(createCategory(categoryDto)), CategoryDto.class);
 	}
 
 	@Autowired
 	public void setCategoryRepository(CategoryRepository categoryRepository) {
 		this.categoryRepository = categoryRepository;
+	}
+
+	@Autowired
+	public void setUserListener(UserListener userListener) {
+		this.userListener = userListener;
+	}
+
+	@Autowired
+	public void setKafkaProducer(KafkaProducer<CategoryDto> kafkaProducer) {
+		this.kafkaProducer = kafkaProducer;
 	}
 
 	@Autowired

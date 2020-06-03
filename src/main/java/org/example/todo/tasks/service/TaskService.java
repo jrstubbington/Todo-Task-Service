@@ -7,7 +7,6 @@ import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
-import org.example.todo.tasks.dto.CategoryDto;
 import org.example.todo.tasks.dto.TaskCreationRequest;
 import org.example.todo.tasks.dto.TaskDto;
 import org.example.todo.tasks.listener.UserListener;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -101,14 +101,10 @@ public class TaskService {
 	@Transactional
 	public Task createTask(TaskCreationRequest taskCreationRequest) throws ImproperResourceSpecification, ResourceNotFoundException {
 		TaskDto taskDto = Objects.requireNonNull(taskCreationRequest.getTask());
-		CategoryDto categoryDto = Objects.requireNonNull(taskCreationRequest.getCategory());
+		UUID categoryUuid = Objects.requireNonNull(taskCreationRequest.getCategoryUuid());
 
 		if (Objects.nonNull(taskDto.getUuid())) {
 			throw new ImproperResourceSpecification("Cannot specify UUID of task when creating new task");
-		}
-
-		if (Objects.isNull(categoryDto.getUuid())) {
-			throw new ImproperResourceSpecification("Must specify UUID of category when creating new task. Create a new category before creating task.");
 		}
 
 		if (!userListener.contains(taskDto.getAssignedToUserUuid())) {
@@ -118,13 +114,15 @@ public class TaskService {
 			throw new ResourceNotFoundException(String.format("Workspace with id, %s could not be found to assign task to.", taskDto.getWorkspaceUuid()));
 		}
 
-		Category category = categoryService.findCategoryByUuid(categoryDto.getUuid());
+		Category category = categoryService.findCategoryByUuid(categoryUuid);
 		Task task = new Task();
 		task.setCategory(category);
+		task.setCreatedByUserUuid(taskDto.getCreatedByUserUuid());
 		task.setAssignedToUserUuid(taskDto.getAssignedToUserUuid());
+		task.setStatus(taskDto.getStatus());
 		task.setName(taskDto.getName());
 		task.setDescription(taskDto.getDescription());
-		task.setPriority(taskDto.hashCode());
+		task.setPriority(taskDto.getPriority());
 		task.setWorkspaceUuid(taskDto.getWorkspaceUuid());
 		task.setReminderDate(taskDto.getReminderDate());
 
@@ -145,9 +143,19 @@ public class TaskService {
 
 	@Transactional
 	public void reassignAllUserTasks(UUID assignedUUID, UUID newUuid) {
-		Set<Task> assignedTasks = taskRepository.findDistinctByAssignedToUserUuid(assignedUUID);
+		Set<Task> assignedTasks = taskRepository.findAllByAssignedToUserUuid(assignedUUID);
 		assignedTasks.forEach(task -> task.setAssignedToUserUuid(newUuid));
 		taskRepository.saveAll(assignedTasks);
+	}
+
+	@Transactional
+	public Set<Task> getAllTasksByUserUuid(UUID userUuid) {
+		return taskRepository.findAllByAssignedToUserUuid(userUuid);
+	}
+
+	@Transactional
+	public ResponseContainer<TaskDto> getAllTasksByUserUuidResponse(UUID userUuid) {
+		return ResponseUtils.pageToDtoResponseContainer(new ArrayList<>(getAllTasksByUserUuid(userUuid)), TaskDto.class);
 	}
 
 	@Autowired

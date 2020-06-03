@@ -14,17 +14,17 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 @Component
 @Slf4j
 public class UserListener {
 	private final Set<UUID> userUuidSet = Collections.synchronizedSet(
 			Collections.newSetFromMap(
-					new WeakHashMap<>()
+					new HashMap<>()
 			)
 	);
 
@@ -70,6 +70,7 @@ public class UserListener {
 		boolean found = userUuidSet.contains(uuid);
 		if (!found) {
 			//TODO: execute api call to REALLY check to make sure it doesn't exist
+
 		}
 		return found;
 	}

@@ -22,7 +22,6 @@ public class CategoryDto implements DtoEntity {
 
 	private String description;
 
-	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private UUID createdByUserUuid;
 
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)

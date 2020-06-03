@@ -35,6 +35,9 @@ public class Setup {
 				UUID workspaceUuid = UUID.randomUUID();
 				UUID userUuid = UUID.randomUUID();
 
+				log.info("UserUUID {}", userUuid);
+				log.info("WorkspaceUUID {}", workspaceUuid);
+
 				Category category = Category.builder()
 						.name("My Test Category")
 						.description("This is a testing category for testing")

@@ -12,18 +12,20 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 @Component
 @Slf4j
 public class WorkspaceListener {
 
+	//NOTE: This violates separation of stateless and stateful. This setup wouldn't work in situations where there's
+	// more than one service instance. This storage would need to be moved to a central cache like redis
 	private final Set<UUID> workspaceUuidSet = Collections.synchronizedSet(
 			Collections.newSetFromMap(
-					new WeakHashMap<>()
+					new HashMap<>()
 			)
 	);
 
@@ -64,6 +66,10 @@ public class WorkspaceListener {
 	}
 
 	public boolean contains(UUID uuid) {
-		return workspaceUuidSet.contains(uuid);
+		boolean found = workspaceUuidSet.contains(uuid);
+		if (!found) {
+			//TODO: execute api call to REALLY check to make sure it doesn't exist
+		}
+		return found;
 	}
 }
