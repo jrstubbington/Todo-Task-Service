@@ -67,7 +67,11 @@ public class UserListener {
 	}
 
 	public boolean contains(UUID uuid) {
-		return userUuidSet.contains(uuid);
+		boolean found = userUuidSet.contains(uuid);
+		if (!found) {
+			//TODO: execute api call to REALLY check to make sure it doesn't exist
+		}
+		return found;
 	}
 
 	@Autowired

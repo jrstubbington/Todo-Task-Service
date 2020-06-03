@@ -14,7 +14,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class TaskDto implements DtoEntity {
 
-	private final UUID uuid = UUID.randomUUID();
+	private UUID uuid;
 
 	private String name;
 
@@ -25,7 +25,7 @@ public class TaskDto implements DtoEntity {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private OffsetDateTime createdDate;
 
-	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
+//	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private UUID createdByUserUuid;
 
 	private UUID assignedToUserUuid;

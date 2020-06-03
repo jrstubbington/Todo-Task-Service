@@ -10,6 +10,7 @@ import org.example.todo.common.util.ResponseUtils;
 import org.example.todo.tasks.dto.CategoryDto;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
+import org.example.todo.tasks.model.Task;
 import org.example.todo.tasks.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +18,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -42,6 +45,32 @@ public class CategoryService {
 	//TODO: Enable filtering and sorting
 	public ResponseContainer<CategoryDto> getAllCategoriesResponse(PageRequest pageRequest) {
 		return ResponseUtils.pageToDtoResponseContainer(categoryRepository.findAll(pageRequest), CategoryDto.class);
+	}
+
+	public Category findCategoryByUuid(UUID uuid) throws ResourceNotFoundException {
+		return categoryRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException(String.format("Category not found with id: %s", uuid)));
+	}
+
+	public ResponseContainer<CategoryDto> findCategoryByUuidResponse(UUID uuid) throws ResourceNotFoundException {
+		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(findCategoryByUuid(uuid)), CategoryDto.class);
+	}
+
+	public void addTaskToCategory(UUID categoryUuid, Task task) throws ResourceNotFoundException {
+		Category category = findCategoryByUuid(categoryUuid);
+
+		Set<Task> tasks = category.getTasks();
+		tasks.add(task);
+
+		categoryRepository.saveAndFlush(category);
+	}
+
+	@Transactional
+	public void addTaskToCategory(Category category, Task task) {
+
+		Set<Task> tasks = category.getTasks();
+		tasks.add(task);
+
+		categoryRepository.saveAndFlush(category);
 	}
 
 
