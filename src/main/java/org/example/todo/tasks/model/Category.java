@@ -10,6 +10,7 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -63,6 +64,8 @@ public class Category implements Serializable {
 
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	@OneToMany(mappedBy="category")
+	@OneToMany(mappedBy="category",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
 	private Set<Task> tasks;
 }

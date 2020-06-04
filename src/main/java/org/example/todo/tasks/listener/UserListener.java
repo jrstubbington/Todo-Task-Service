@@ -22,6 +22,8 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class UserListener {
+	//NOTE: This violates separation of stateless and stateful. This setup wouldn't work in situations where there's
+	// more than one service instance. This storage would need to be moved to a central cache like redis
 	private final Set<UUID> userUuidSet = Collections.synchronizedSet(
 			Collections.newSetFromMap(
 					new HashMap<>()
