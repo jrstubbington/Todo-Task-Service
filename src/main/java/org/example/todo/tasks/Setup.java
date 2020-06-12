@@ -1,6 +1,10 @@
 package org.example.todo.tasks;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.todo.common.dto.TaskDto;
+import org.example.todo.common.kafka.KafkaOperation;
+import org.example.todo.common.kafka.KafkaProducer;
+import org.example.todo.common.util.ResponseUtils;
 import org.example.todo.tasks.model.Category;
 import org.example.todo.tasks.model.Task;
 import org.example.todo.tasks.repository.CategoryRepository;
@@ -12,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +32,9 @@ public class Setup {
 	@Autowired
 	private TaskRepository taskRepository;
 
+	@Autowired
+	private KafkaProducer<TaskDto> kafkaProducer;
+
 	@Bean
 	@Transactional
 	public CommandLineRunner demo() {
@@ -34,6 +42,7 @@ public class Setup {
 			try {
 				UUID workspaceUuid = UUID.randomUUID();
 				UUID userUuid = UUID.randomUUID();
+
 
 				log.info("UserUUID {}", userUuid);
 				log.info("WorkspaceUUID {}", workspaceUuid);
@@ -51,6 +60,7 @@ public class Setup {
 						.assignedToUserUuid(userUuid)
 						.createdByUserUuid(userUuid)
 						.workspaceUuid(workspaceUuid)
+						.reminderDate(OffsetDateTime.now().plusMinutes(5))
 						.status("active")
 						.build();
 
@@ -62,6 +72,9 @@ public class Setup {
 
 				categoryRepository.save(category);
 				taskRepository.save(task);
+
+				kafkaProducer.sendMessage("tasks", KafkaOperation.CREATE,
+						ResponseUtils.convertToDto(task, TaskDto.class));
 
 			}
 			catch (Exception e) {

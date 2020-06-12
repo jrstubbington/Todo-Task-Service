@@ -8,10 +8,16 @@ import org.example.todo.tasks.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,6 +78,34 @@ public class UserListener {
 		boolean found = userUuidSet.contains(uuid);
 		if (!found) {
 			//TODO: execute api call to REALLY check to make sure it doesn't exist
+			/*WebClient client1 = WebClient.create("http://localhost:8081");
+			ResponseContainer<UserDto> responseContainer = client1.get()
+					.uri("/v1/workspaces/"+uuid)
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+					.retrieve()
+					.onStatus(HttpStatus.resolve(400)::equals,
+							clientResponse -> Mono.empty())
+					.bodyToMono(ResponseContainer.class).block();
+			if (Objects.nonNull(responseContainer) && !responseContainer.getData().isEmpty()) {
+				userUuidSet.add(uuid);
+				return true;
+			}*/
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			//set my entity
+			HttpEntity<Object> entity = new HttpEntity<Object>(headers);
+			try {
+				ResponseEntity responseEntity = restTemplate.exchange("http://localhost:8081/v1/users/" + uuid, HttpMethod.GET, entity, String.class);
+				if (responseEntity.getStatusCode().is2xxSuccessful()) {
+					//				userUuidSet.add(uuid);
+					found = true;
+				}
+			}
+			catch (Exception e) {
+				found = false;
+			}
 
 		}
 		return found;

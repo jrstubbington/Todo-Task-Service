@@ -6,10 +6,16 @@ import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.util.Status;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,6 +75,24 @@ public class WorkspaceListener {
 		boolean found = workspaceUuidSet.contains(uuid);
 		if (!found) {
 			//TODO: execute api call to REALLY check to make sure it doesn't exist
+			//TODO: Replace with auto-generated client library
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			//set my entity
+			HttpEntity<Object> entity = new HttpEntity<Object>(headers);
+			try {
+				ResponseEntity responseEntity = restTemplate.exchange("http://localhost:8081/v1/workspaces/" + uuid, HttpMethod.GET, entity, String.class);
+				if (responseEntity.getStatusCode().is2xxSuccessful()) {
+//				workspaceUuidSet.add(uuid);
+					found = true;
+				}
+			}
+			catch (Exception e){
+				found = false;
+			}
+
 		}
 		return found;
 	}

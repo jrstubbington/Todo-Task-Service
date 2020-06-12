@@ -1,6 +1,7 @@
 package org.example.todo.tasks.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.todo.common.dto.TaskDto;
 import org.example.todo.common.exceptions.ImproperResourceSpecification;
 import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
@@ -8,7 +9,6 @@ import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
 import org.example.todo.tasks.dto.TaskCreationRequest;
-import org.example.todo.tasks.dto.TaskDto;
 import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
@@ -70,6 +70,9 @@ public class TaskService {
 			if (!userListener.contains(taskDto.getAssignedToUserUuid())) {
 				throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task to.", taskDto.getAssignedToUserUuid()));
 			}
+			if (!userListener.contains(taskDto.getCreatedByUserUuid())) {
+				throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task created by.", taskDto.getAssignedToUserUuid()));
+			}
 			if(!workspaceListener.contains(taskDto.getWorkspaceUuid())) {
 				throw new ResourceNotFoundException(String.format("Workspace with id, %s could not be found to assign task to.", taskDto.getWorkspaceUuid()));
 			}
@@ -77,7 +80,7 @@ public class TaskService {
 			task.setAssignedToUserUuid(taskDto.getAssignedToUserUuid());
 			task.setName(taskDto.getName());
 			task.setDescription(taskDto.getDescription());
-			task.setPriority(taskDto.hashCode());
+			task.setPriority(taskDto.getPriority());
 			task.setWorkspaceUuid(taskDto.getWorkspaceUuid());
 			task.setReminderDate(taskDto.getReminderDate());
 

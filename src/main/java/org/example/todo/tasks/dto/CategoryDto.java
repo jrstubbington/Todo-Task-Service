@@ -1,3 +1,4 @@
+/*
 package org.example.todo.tasks.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,3 +28,4 @@ public class CategoryDto implements DtoEntity {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	private OffsetDateTime createdDate;
 }
+*/
