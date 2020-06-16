@@ -5,10 +5,10 @@ import org.example.todo.common.exceptions.ImproperResourceSpecification;
 import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.kafka.KafkaProducer;
-import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
-import org.example.todo.tasks.dto.TaskCreationRequest;
-import org.example.todo.tasks.dto.TaskDto;
+import org.example.todo.tasks.generated.dto.ResponseContainerTaskDto;
+import org.example.todo.tasks.generated.dto.TaskCreationRequest;
+import org.example.todo.tasks.generated.dto.TaskDto;
 import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -48,20 +47,20 @@ public class TaskService {
 	}
 
 	//TODO: Enable filtering and sorting
-	public ResponseContainer<TaskDto> getAllTasksResponse(PageRequest pageRequest) {
-		return ResponseUtils.pageToDtoResponseContainer(taskRepository.findAll(pageRequest), TaskDto.class);
+	public ResponseContainerTaskDto getAllTasksResponse(PageRequest pageRequest) {
+		return ResponseUtils.convertToDtoResponseContainer(taskRepository.findAll(pageRequest), TaskDto.class, ResponseContainerTaskDto.class);
 	}
 
-	public Task findTaskByUuid(UUID uuid) throws ResourceNotFoundException {
+	public Task findTaskByUuid(UUID uuid) {
 		return taskRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException(String.format("User not found with id: %s", uuid)));
 	}
 
-	public ResponseContainer<TaskDto> findTaskByUuidResponse(UUID uuid) throws ResourceNotFoundException {
-		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(findTaskByUuid(uuid)), TaskDto.class);
+	public ResponseContainerTaskDto findTaskByUuidResponse(UUID uuid) {
+		return ResponseUtils.convertToDtoResponseContainer(findTaskByUuid(uuid), TaskDto.class, ResponseContainerTaskDto.class);
 	}
 
 	@Transactional
-	public Task updateTask(TaskDto taskDto) throws ResourceNotFoundException, ImproperResourceSpecification {
+	public Task updateTask(TaskDto taskDto){
 		if (Objects.nonNull(taskDto.getUuid())) {
 			// Task is being updated
 			log.debug("Updating task {}", taskDto);
@@ -73,7 +72,7 @@ public class TaskService {
 			if (userListener.doesNotContain(taskDto.getCreatedByUserUuid())) {
 				throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task created by.", taskDto.getAssignedToUserUuid()));
 			}
-			if(!workspaceListener.contains(taskDto.getWorkspaceUuid())) {
+			if(workspaceListener.doesNotContain(taskDto.getWorkspaceUuid())) {
 				throw new ResourceNotFoundException(String.format("Workspace with id, %s could not be found to assign task to.", taskDto.getWorkspaceUuid()));
 			}
 
@@ -97,12 +96,12 @@ public class TaskService {
 	}
 
 	@Transactional
-	public ResponseContainer<TaskDto> updateTaskResponse(TaskDto taskUpdate) throws ResourceNotFoundException, ImproperResourceSpecification {
-		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(updateTask(taskUpdate)), TaskDto.class);
+	public ResponseContainerTaskDto updateTaskResponse(TaskDto taskUpdate) {
+		return ResponseUtils.convertToDtoResponseContainer(updateTask(taskUpdate), TaskDto.class, ResponseContainerTaskDto.class);
 	}
 
 	@Transactional
-	public Task createTask(TaskCreationRequest taskCreationRequest) throws ImproperResourceSpecification, ResourceNotFoundException {
+	public Task createTask(TaskCreationRequest taskCreationRequest) {
 		TaskDto taskDto = Objects.requireNonNull(taskCreationRequest.getTask());
 		UUID categoryUuid = Objects.requireNonNull(taskCreationRequest.getCategoryUuid());
 
@@ -113,7 +112,7 @@ public class TaskService {
 		if (userListener.doesNotContain(taskDto.getAssignedToUserUuid())) {
 			throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task to.", taskDto.getAssignedToUserUuid()));
 		}
-		if(!workspaceListener.contains(taskDto.getWorkspaceUuid())) {
+		if(workspaceListener.doesNotContain(taskDto.getWorkspaceUuid())) {
 			throw new ResourceNotFoundException(String.format("Workspace with id, %s could not be found to assign task to.", taskDto.getWorkspaceUuid()));
 		}
 
@@ -140,8 +139,8 @@ public class TaskService {
 	}
 
 	@Transactional
-	public ResponseContainer<TaskDto> createTaskResponse(TaskCreationRequest taskCreationRequest) throws ImproperResourceSpecification, ResourceNotFoundException {
-		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(createTask(taskCreationRequest)), TaskDto.class);
+	public ResponseContainerTaskDto createTaskResponse(TaskCreationRequest taskCreationRequest) {
+		return ResponseUtils.convertToDtoResponseContainer(createTask(taskCreationRequest), TaskDto.class, ResponseContainerTaskDto.class);
 	}
 
 	@Transactional
@@ -157,8 +156,8 @@ public class TaskService {
 	}
 
 	@Transactional
-	public ResponseContainer<TaskDto> getAllTasksByUserUuidResponse(UUID userUuid) {
-		return ResponseUtils.pageToDtoResponseContainer(new ArrayList<>(getAllTasksByUserUuid(userUuid)), TaskDto.class);
+	public ResponseContainerTaskDto getAllTasksByUserUuidResponse(UUID userUuid) {
+		return ResponseUtils.convertToDtoResponseContainer(new ArrayList<>(getAllTasksByUserUuid(userUuid)), TaskDto.class, ResponseContainerTaskDto.class);
 	}
 
 	@Autowired

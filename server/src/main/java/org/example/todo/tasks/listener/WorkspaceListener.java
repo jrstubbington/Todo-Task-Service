@@ -4,21 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.todo.accounts.controller.WorkspaceManagementApi;
 import org.example.todo.accounts.dto.ResponseContainerWorkspaceDto;
 import org.example.todo.accounts.dto.WorkspaceDto;
+import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.util.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,30 +73,25 @@ public class WorkspaceListener {
 		acknowledgment.acknowledge();
 	}
 
-	public boolean contains(UUID uuid) {
+	public boolean doesNotContain(UUID uuid) {
 		boolean found = workspaceUuidSet.contains(uuid);
 		if (!found) {
-			//TODO: execute api call to REALLY check to make sure it doesn't exist
-			//TODO: Replace with auto-generated client library
-			RestTemplate restTemplate = new RestTemplate();
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-
-			//set my entity
-			HttpEntity<Object> entity = new HttpEntity<>(headers);
 			try {
-				ResponseEntity responseEntity = restTemplate.exchange("http://localhost:8081/v1/workspaces/" + uuid, HttpMethod.GET, entity, String.class);
 				ResponseContainerWorkspaceDto responseContainerWorkspaceDto = workspaceManagementApi.getWorkspaceByUUID(uuid);
-				if (responseEntity.getStatusCode().is2xxSuccessful()) {
-//				workspaceUuidSet.add(uuid);
+				if (!responseContainerWorkspaceDto.getData().isEmpty()) {
+//					workspaceUuidSet.add(uuid); //TODO: Decide if a memory map is necessary
 					found = true;
 				}
 			}
-			catch (Exception e){
-				found = false;
+			catch (ResourceNotFoundException e) {
+				log.debug("{}", e.getMessage());
+				log.trace("Error:", e);
 			}
-
+			catch (RestClientException e) {
+				log.info("Failed to do the thing");
+				log.trace("Error:", e);
+			}
 		}
-		return found;
+		return !found;
 	}
 }

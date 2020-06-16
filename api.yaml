@@ -1,0 +1,399 @@
+openapi: 3.0.1
+info:
+  title: Task Management API
+  description: Service for managing tasks and categories
+  contact:
+    name: James Stubbington
+    url: 'https://github.com/jrstubbington'
+    email: jamesrstubbington@gmail.com
+  license:
+    name: 'License: MIT'
+    url: 'https://github.com/jrstubbington/Todo-Task-Service/blob/master/LICENSE'
+  version: 1.0-SNAPSHOT
+servers:
+  - url: 'http://localhost:8082'
+    description: Generated server url
+tags:
+  - name: Task Management
+    description: A collection of APIs designed to handle functions related to Task management
+  - name: Category Management
+    description: A collection of APIs designed to handle functions related to category management
+paths:
+  /v1/categories/:
+    get:
+      tags:
+        - Category Management
+      summary: View a list of available categories
+      operationId: getCategories
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+    post:
+      tags:
+        - Category Management
+      summary: Create a new task
+      operationId: createCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+  '/v1/categories/{uuid}':
+    get:
+      tags:
+        - Category Management
+      summary: Get a specific task's information
+      operationId: getCategoryByUUID
+      parameters:
+        - name: uuid
+          in: path
+          description: Category uuid to get task object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+  /v1/tasks/:
+    get:
+      tags:
+        - Task Management
+      summary: View a list of available tasks
+      operationId: getTasks
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+    put:
+      tags:
+        - Task Management
+      summary: Update an existing task
+      operationId: updateTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+    post:
+      tags:
+        - Task Management
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreationRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+  '/v1/tasks/{uuid}':
+    get:
+      tags:
+        - Task Management
+      summary: Get a specific task's information
+      operationId: getTaskByUUID
+      parameters:
+        - name: uuid
+          in: path
+          description: Task uuid to get task object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+  '/v1/tasks/user/{uuid}':
+    get:
+      tags:
+        - Task Management
+      summary: Get a list of tasks for a specific user
+      operationId: getTaskListByUserUuid
+      parameters:
+        - name: uuid
+          in: path
+          description: User uuid to get list of tasks with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+components:
+  schemas:
+    ErrorDetails:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        requestInformation:
+          type: string
+        errorCode:
+          type: string
+        moreInfo:
+          type: string
+    CategoryDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        workspaceUuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createdByUserUuid:
+          type: string
+          format: uuid
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+    ResponseContainerCategoryDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+        statusDescription:
+          type: string
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        type:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDto'
+    TaskCreationRequest:
+      type: object
+      properties:
+        task:
+          $ref: '#/components/schemas/TaskDto'
+        categoryUuid:
+          type: string
+          format: uuid
+    TaskDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+          readOnly: true
+        createdByUserUuid:
+          type: string
+          format: uuid
+        assignedToUserUuid:
+          type: string
+          format: uuid
+        workspaceUuid:
+          type: string
+          format: uuid
+        priority:
+          type: integer
+          format: int32
+        reminderDate:
+          type: string
+          format: date-time
+    ResponseContainerTaskDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+        statusDescription:
+          type: string
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        type:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDto'

@@ -73,3 +73,6 @@ logging:
 project:
   package: ^project.groupId^
   version: ^project.version^
+  name: ^project.artifactId^
+  description: ^project.description^
+

@@ -7,7 +7,7 @@ import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseUtils;
-import org.example.todo.tasks.dto.TaskDto;
+import org.example.todo.tasks.generated.dto.TaskDto;
 import org.example.todo.tasks.model.Category;
 import org.example.todo.tasks.model.Task;
 import org.example.todo.tasks.repository.CategoryRepository;

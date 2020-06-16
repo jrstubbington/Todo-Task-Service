@@ -5,9 +5,9 @@ import org.example.todo.common.exceptions.ImproperResourceSpecification;
 import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.kafka.KafkaProducer;
-import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
-import org.example.todo.tasks.dto.CategoryDto;
+import org.example.todo.tasks.generated.dto.CategoryDto;
+import org.example.todo.tasks.generated.dto.ResponseContainerCategoryDto;
 import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
@@ -19,7 +19,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -46,19 +45,19 @@ public class CategoryService {
 	}
 
 	//TODO: Enable filtering and sorting
-	public ResponseContainer<CategoryDto> getAllCategoriesResponse(PageRequest pageRequest) {
-		return ResponseUtils.pageToDtoResponseContainer(categoryRepository.findAll(pageRequest), CategoryDto.class);
+	public ResponseContainerCategoryDto getAllCategoriesResponse(PageRequest pageRequest) {
+		return ResponseUtils.convertToDtoResponseContainer(categoryRepository.findAll(pageRequest), CategoryDto.class, ResponseContainerCategoryDto.class);
 	}
 
-	public Category findCategoryByUuid(UUID uuid) throws ResourceNotFoundException {
+	public Category findCategoryByUuid(UUID uuid) {
 		return categoryRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException(String.format("Category not found with id: %s", uuid)));
 	}
 
-	public ResponseContainer<CategoryDto> findCategoryByUuidResponse(UUID uuid) throws ResourceNotFoundException {
-		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(findCategoryByUuid(uuid)), CategoryDto.class);
+	public ResponseContainerCategoryDto findCategoryByUuidResponse(UUID uuid) {
+		return ResponseUtils.convertToDtoResponseContainer(findCategoryByUuid(uuid), CategoryDto.class, ResponseContainerCategoryDto.class);
 	}
 
-	public void addTaskToCategory(UUID categoryUuid, Task task) throws ResourceNotFoundException {
+	public void addTaskToCategory(UUID categoryUuid, Task task) {
 		Category category = findCategoryByUuid(categoryUuid);
 
 		Set<Task> tasks = category.getTasks();
@@ -77,7 +76,7 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public Category createCategory(CategoryDto categoryDto) throws ResourceNotFoundException, ImproperResourceSpecification {
+	public Category createCategory(CategoryDto categoryDto) {
 		UUID workspaceUuid = categoryDto.getWorkspaceUuid();
 		if(Objects.nonNull(categoryDto.getUuid())) {
 			throw new ImproperResourceSpecification("Cannot specify UUID when creating new category");
@@ -86,7 +85,7 @@ public class CategoryService {
 		if (userListener.doesNotContain(categoryDto.getCreatedByUserUuid())) {
 			throw new ResourceNotFoundException(String.format("user with id, %s could not be found to create category to.", categoryDto.getCreatedByUserUuid()));
 		}
-		if(!workspaceListener.contains(categoryDto.getWorkspaceUuid())) {
+		if(workspaceListener.doesNotContain(categoryDto.getWorkspaceUuid())) {
 			throw new ResourceNotFoundException(String.format("Workspace with id, %s could not be found to create category to.", categoryDto.getWorkspaceUuid()));
 		}
 
@@ -106,8 +105,8 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public ResponseContainer<CategoryDto> createCategoryResponse(CategoryDto categoryDto) throws ResourceNotFoundException, ImproperResourceSpecification {
-		return ResponseUtils.pageToDtoResponseContainer(Collections.singletonList(createCategory(categoryDto)), CategoryDto.class);
+	public ResponseContainerCategoryDto createCategoryResponse(CategoryDto categoryDto) {
+		return ResponseUtils.convertToDtoResponseContainer(createCategory(categoryDto), CategoryDto.class, ResponseContainerCategoryDto.class);
 	}
 
 	@Autowired

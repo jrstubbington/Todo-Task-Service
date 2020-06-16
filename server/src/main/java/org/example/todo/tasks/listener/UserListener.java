@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.todo.accounts.controller.UserManagementApi;
 import org.example.todo.accounts.dto.ResponseContainerUserDto;
 import org.example.todo.accounts.dto.UserDto;
+import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.util.Status;
 import org.example.todo.tasks.service.TaskService;
@@ -79,10 +80,15 @@ public class UserListener {
 		boolean found = userUuidSet.contains(uuid);
 		if (!found) {
 			try {
-				ResponseContainerUserDto responseContainerUserDto = userManagementApi.getUserByUUID(UUID.randomUUID());
+				ResponseContainerUserDto responseContainerUserDto = userManagementApi.getUserByUUID(uuid);
 				if (!responseContainerUserDto.getData().isEmpty()) {
+//					userUuidSet.add(uuid); //TODO: decide if a memory-map is necessary
 					found = true;
 				}
+			}
+			catch (ResourceNotFoundException e) {
+				log.debug("{}", e.getMessage());
+				log.trace("Error:", e);
 			}
 			catch (RestClientException e) {
 				log.info("Failed to do the thing");
