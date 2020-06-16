@@ -1,7 +1,6 @@
 package org.example.todo.tasks.dto;
 
 import lombok.Data;
-import org.example.todo.common.dto.TaskDto;
 
 import java.util.UUID;
 

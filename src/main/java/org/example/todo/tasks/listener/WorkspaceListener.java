@@ -1,9 +1,12 @@
 package org.example.todo.tasks.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.todo.common.dto.WorkspaceDto;
+import org.example.todo.accounts.controller.WorkspaceManagementApi;
+import org.example.todo.accounts.dto.ResponseContainerWorkspaceDto;
+import org.example.todo.accounts.dto.WorkspaceDto;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.util.Status;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
@@ -27,6 +30,9 @@ import java.util.UUID;
 @Slf4j
 public class WorkspaceListener {
 
+	@Autowired
+	private WorkspaceManagementApi workspaceManagementApi;
+
 	//NOTE: This violates separation of stateless and stateful. This setup wouldn't work in situations where there's
 	// more than one service instance. This storage would need to be moved to a central cache like redis
 	private final Set<UUID> workspaceUuidSet = Collections.synchronizedSet(
@@ -37,8 +43,8 @@ public class WorkspaceListener {
 
 	@EventListener
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		log.info("{}", event.getSource());
-		log.info("startup");
+		log.trace("{}", event.getSource());
+		log.trace("startup");
 		//TODO: execute API call to accounts service on startup to get initial list of workspaces
 	}
 
@@ -58,7 +64,7 @@ public class WorkspaceListener {
 				workspaceUuidSet.remove(workspaceUuid);
 				break;
 			case UPDATE:
-				if (workspaceDto.getStatus() != Status.ACTIVE) {
+				if (!workspaceDto.getStatus().getValue().equalsIgnoreCase(Status.ACTIVE.toString())) {
 					log.debug("Removing workspaceUuid {}", workspaceUuid);
 					workspaceUuidSet.remove(workspaceUuid);
 				}
@@ -81,9 +87,10 @@ public class WorkspaceListener {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
 			//set my entity
-			HttpEntity<Object> entity = new HttpEntity<Object>(headers);
+			HttpEntity<Object> entity = new HttpEntity<>(headers);
 			try {
 				ResponseEntity responseEntity = restTemplate.exchange("http://localhost:8081/v1/workspaces/" + uuid, HttpMethod.GET, entity, String.class);
+				ResponseContainerWorkspaceDto responseContainerWorkspaceDto = workspaceManagementApi.getWorkspaceByUUID(uuid);
 				if (responseEntity.getStatusCode().is2xxSuccessful()) {
 //				workspaceUuidSet.add(uuid);
 					found = true;

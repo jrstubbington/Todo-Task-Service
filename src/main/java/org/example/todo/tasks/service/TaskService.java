@@ -1,7 +1,6 @@
 package org.example.todo.tasks.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.todo.common.dto.TaskDto;
 import org.example.todo.common.exceptions.ImproperResourceSpecification;
 import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
@@ -9,6 +8,7 @@ import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
 import org.example.todo.tasks.dto.TaskCreationRequest;
+import org.example.todo.tasks.dto.TaskDto;
 import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
@@ -67,10 +67,10 @@ public class TaskService {
 			log.debug("Updating task {}", taskDto);
 			Task task = findTaskByUuid(taskDto.getUuid());
 
-			if (!userListener.contains(taskDto.getAssignedToUserUuid())) {
+			if (userListener.doesNotContain(taskDto.getAssignedToUserUuid())) {
 				throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task to.", taskDto.getAssignedToUserUuid()));
 			}
-			if (!userListener.contains(taskDto.getCreatedByUserUuid())) {
+			if (userListener.doesNotContain(taskDto.getCreatedByUserUuid())) {
 				throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task created by.", taskDto.getAssignedToUserUuid()));
 			}
 			if(!workspaceListener.contains(taskDto.getWorkspaceUuid())) {
@@ -110,7 +110,7 @@ public class TaskService {
 			throw new ImproperResourceSpecification("Cannot specify UUID of task when creating new task");
 		}
 
-		if (!userListener.contains(taskDto.getAssignedToUserUuid())) {
+		if (userListener.doesNotContain(taskDto.getAssignedToUserUuid())) {
 			throw new ResourceNotFoundException(String.format("User with id, %s could not be found to assign task to.", taskDto.getAssignedToUserUuid()));
 		}
 		if(!workspaceListener.contains(taskDto.getWorkspaceUuid())) {

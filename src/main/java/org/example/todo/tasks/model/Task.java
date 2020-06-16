@@ -44,7 +44,7 @@ public class Task implements Serializable {
 
 	@Type(type="uuid-binary")
 	@NaturalId
-	@Column(name = "UUID", nullable = false, updatable = false)
+	@Column(name = "UUID", unique = true, nullable = false, updatable = false)
 	@GeneratedValue(generator = "hibernate-uuid")
 	@NotNull
 	private final UUID uuid = UUID.randomUUID();

@@ -1,13 +1,13 @@
 package org.example.todo.tasks.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.todo.common.dto.CategoryDto;
 import org.example.todo.common.exceptions.ImproperResourceSpecification;
 import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseContainer;
 import org.example.todo.common.util.ResponseUtils;
+import org.example.todo.tasks.dto.CategoryDto;
 import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
@@ -83,7 +83,7 @@ public class CategoryService {
 			throw new ImproperResourceSpecification("Cannot specify UUID when creating new category");
 		}
 
-		if (!userListener.contains(categoryDto.getCreatedByUserUuid())) {
+		if (userListener.doesNotContain(categoryDto.getCreatedByUserUuid())) {
 			throw new ResourceNotFoundException(String.format("user with id, %s could not be found to create category to.", categoryDto.getCreatedByUserUuid()));
 		}
 		if(!workspaceListener.contains(categoryDto.getWorkspaceUuid())) {
