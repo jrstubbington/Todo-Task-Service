@@ -47,6 +47,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         '500':
           description: Internal error has occurred
           content:
@@ -73,6 +85,12 @@ paths:
                 $ref: '#/components/schemas/ResponseContainerCategoryDto'
         '400':
           description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
           content:
             application/json:
               schema:
@@ -104,6 +122,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+    delete:
+      tags:
+        - Category Management
+      summary: Delete a specific category
+      operationId: deleteCategory
+      parameters:
+        - name: uuid
+          in: path
+          description: Category uuid to get task object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         '500':
           description: Internal error has occurred
           content:
@@ -168,6 +236,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         '500':
           description: Internal error has occurred
           content:
@@ -194,6 +268,12 @@ paths:
                 $ref: '#/components/schemas/ResponseContainerTaskDto'
         '400':
           description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
           content:
             application/json:
               schema:
@@ -225,6 +305,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+    delete:
+      tags:
+        - Task Management
+      summary: Delete a specific task
+      operationId: deleteTask
+      parameters:
+        - name: uuid
+          in: path
+          description: Category uuid to get task object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         '500':
           description: Internal error has occurred
           content:
@@ -252,6 +382,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
         '500':
           description: Internal error has occurred
           content:
