@@ -114,7 +114,7 @@
                             <!--                            <ignoreFileOverride>${project.basedir}/.openapi-generator-ignore</ignoreFileOverride>-->
                             <modelPackage>org.example.todo.tasks.generated.dto</modelPackage>
                             <apiPackage>org.example.todo.tasks.generated.controller</apiPackage>
-                            <invokerPackage>org.example</invokerPackage>
+                            <invokerPackage>org.example.todo.tasks</invokerPackage>
 
                             <generatorName>java</generatorName>
                             <configOptions>
