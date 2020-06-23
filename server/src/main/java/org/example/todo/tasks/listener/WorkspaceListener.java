@@ -1,9 +1,9 @@
 package org.example.todo.tasks.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.todo.accounts.controller.WorkspaceManagementApi;
-import org.example.todo.accounts.dto.ResponseContainerWorkspaceDto;
-import org.example.todo.accounts.dto.WorkspaceDto;
+import org.example.todo.accounts.generated.controller.WorkspaceManagementApi;
+import org.example.todo.accounts.generated.dto.ResponseContainerWorkspaceDto;
+import org.example.todo.accounts.generated.dto.WorkspaceDto;
 import org.example.todo.common.exceptions.ResourceNotFoundException;
 import org.example.todo.common.kafka.KafkaOperation;
 import org.example.todo.common.util.Status;

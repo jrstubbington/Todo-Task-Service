@@ -88,6 +88,4 @@ public class Task implements Serializable {
 	private int priority;
 
 	private OffsetDateTime reminderDate;
-
-
 }

@@ -52,7 +52,7 @@ public class TaskService {
 	}
 
 	public Task findTaskByUuid(UUID uuid) {
-		return taskRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException(String.format("User not found with id: %s", uuid)));
+		return taskRepository.findByUuid(uuid).orElseThrow(() -> new ResourceNotFoundException(String.format("Task not found with id: %s", uuid)));
 	}
 
 	public ResponseContainerTaskDto findTaskByUuidResponse(UUID uuid) {

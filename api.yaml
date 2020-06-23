@@ -18,6 +18,8 @@ tags:
     description: A collection of APIs designed to handle functions related to Task management
   - name: Category Management
     description: A collection of APIs designed to handle functions related to category management
+  - name: WorkLog Management
+    description: A collection of APIs designed to handle functions related to Worklog management
 paths:
   /v1/categories/:
     get:
@@ -361,6 +363,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+  '/v1/tasks/{uuid}/worklogs':
+    get:
+      tags:
+        - Task Management
+      summary: Get a specific task's information
+      operationId: getWorkLogsForTaskUuid
+      parameters:
+        - name: uuid
+          in: path
+          description: Task uuid to get task object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerWorkLogEntryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   '/v1/tasks/user/{uuid}':
     get:
       tags:
@@ -400,6 +441,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+  #
+  #
+  #
+  #
+  #
+
+  '/v1/worklogs/':
+    post:
+      tags:
+        - WorkLog Management
+      summary: Create a new work log
+      operationId: createWorkLog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkLogEntryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerWorkLogEntryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+    # '/v1/worklogs/{uuid}':
+    put:
+      tags:
+        - WorkLog Management
+      summary: Update an existing work log
+      operationId: updateWorkLog
+      # parameters:
+      #   - name: uuid
+      #     in: path
+      #     description: User uuid to get list of tasks with
+      #     required: true
+      #     schema:
+      #       type: string
+      #       format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkLogEntryDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerWorkLogEntryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+
+#
+#
+#
+#
+#
 components:
   schemas:
     ErrorDetails:
@@ -478,6 +613,29 @@ components:
         categoryUuid:
           type: string
           format: uuid
+    WorkLogEntryDto:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        workspaceUuid:
+          type: string
+          format: uuid
+        userUuid:
+          type: string
+          format: uuid
+        taskUuid:
+          type: string
+          format: uuid
+        startedDate:
+          type: string
+          format: date-time
+        endedDate:
+          type: string
+          format: date-time
+        comment:
+          type: string
     TaskDto:
       type: object
       properties:
@@ -539,3 +697,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TaskDto'
+    ResponseContainerWorkLogEntryDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+        statusDescription:
+          type: string
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        type:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkLogEntryDto'

@@ -138,7 +138,7 @@
                             <inputSpec>${main.basedir}/api.yaml</inputSpec>
                             <modelPackage>org.example.todo.tasks.dto</modelPackage>
                             <apiPackage>org.example.todo.tasks.controller</apiPackage>
-                            <invokerPackage>org.example</invokerPackage>
+                            <invokerPackage>org.example.todo.tasks</invokerPackage>
                             <output>${project.basedir}/target/typescript/</output>
                             <generatorName>typescript-fetch</generatorName>
                             <generateApiTests>false</generateApiTests>
@@ -159,12 +159,10 @@
                             <inputSpec>${main.basedir}/api.yaml</inputSpec>
                             <modelPackage>org.example.todo.tasks.generated.dto</modelPackage>
                             <apiPackage>org.example.todo.tasks.generated.controller</apiPackage>
-                            <invokerPackage>org.example</invokerPackage>
-                            <!--                            <output>${project.basedir}/target/typescript/</output>-->
+                            <invokerPackage>org.example.todo.tasks</invokerPackage>
                             <generatorName>openapi-yaml</generatorName>
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
-
                         </configuration>
                     </execution>
                 </executions>
