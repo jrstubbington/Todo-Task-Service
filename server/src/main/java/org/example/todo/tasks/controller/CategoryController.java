@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Api(tags = "Category Management")
 @Validated
 @Slf4j
+@CrossOrigin
 public class CategoryController implements CategoryManagementApi {
 
 	private CategoryService categoryService;
@@ -36,6 +38,20 @@ public class CategoryController implements CategoryManagementApi {
 	@Override
 	public ResponseEntity<ResponseContainerCategoryDto> getCategoryByUUID(UUID uuid) {
 		return ResponseEntity.ok(categoryService.findCategoryByUuidResponse(uuid));
+	}
+
+	/**
+	 * GET /v1/categories/workspace/{uuid} : Get a list of categories belonging to a specific workspace
+	 *
+	 * @param uuid Workspace uuid to get categories list object with (required)
+	 * @return OK (status code 200)
+	 * or Client Error (status code 400)
+	 * or Not Found (status code 404)
+	 * or Internal error has occurred (status code 500)
+	 */
+	@Override
+	public ResponseEntity<ResponseContainerCategoryDto> getCategoryByWorkspaceUuid(UUID uuid) {
+		return ResponseEntity.ok(categoryService.findCategoriesByWorkspaceUuidResponse(uuid));
 	}
 
 	@Autowired

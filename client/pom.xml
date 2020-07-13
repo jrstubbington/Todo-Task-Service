@@ -115,8 +115,11 @@
                             <modelPackage>org.example.todo.tasks.generated.dto</modelPackage>
                             <apiPackage>org.example.todo.tasks.generated.controller</apiPackage>
                             <invokerPackage>org.example.todo.tasks</invokerPackage>
-
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
                             <generatorName>java</generatorName>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
                             <configOptions>
                                 <sourceFolder>swagger</sourceFolder>
                                 <library>resttemplate</library>
@@ -125,6 +128,8 @@
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
                                 <delegatePattern>true</delegatePattern>
+                                <generateApiTests>false</generateApiTests>
+                                <generateModelTests>false</generateModelTests>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -144,8 +149,11 @@
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
                             <configOptions>
-                                <npmName>accountServiceApi</npmName>
+                                <generateApiTests>false</generateApiTests>
+                                <generateModelTests>false</generateModelTests>
+                                <npmName>taskServiceApi</npmName>
                                 <supportsES6>true</supportsES6>
+                                <npmRepository>http://nexus.trullingham.com/repository/trullingham-local/</npmRepository>
                             </configOptions>
                         </configuration>
                     </execution>

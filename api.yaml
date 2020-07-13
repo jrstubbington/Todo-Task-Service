@@ -10,9 +10,23 @@ info:
     name: 'License: MIT'
     url: 'https://github.com/jrstubbington/Todo-Task-Service/blob/master/LICENSE'
   version: 1.0-SNAPSHOT
+
 servers:
   - url: 'http://localhost:8082'
     description: Generated server url
+
+    # servers:
+    #   - url: https://{environment}.trullingham.com:{port}/v2
+    #     variables:
+    #       environment:
+    #         default: api    # Production server
+    #         enum:
+    #           - api         # Production server
+    #           - api.dev     # Development server
+    #           - api.staging # Staging server
+    #       port:
+    #         default: ''     # Production server
+
 tags:
   - name: Task Management
     description: A collection of APIs designed to handle functions related to Task management
@@ -42,6 +56,8 @@ paths:
             type: integer
             format: int32
             default: 10
+      security:
+        - OpenID: [admin]
       responses:
         '200':
           description: OK
@@ -55,6 +71,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+
         '404':
           description: Not Found
           content:
@@ -70,7 +89,7 @@ paths:
     post:
       tags:
         - Category Management
-      summary: Create a new task
+      summary: Create a new category
       operationId: createCategory
       requestBody:
         content:
@@ -91,6 +110,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -103,11 +124,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+  '/v1/categories/workspace/{uuid}':
+    get:
+      tags:
+        - Category Management
+      summary: Get a list of categories belonging to a specific workspace
+      operationId: getCategoryByWorkspaceUuid
+      parameters:
+        - name: uuid
+          in: path
+          description: Workspace uuid to get categories list object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerCategoryDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   '/v1/categories/{uuid}':
     get:
       tags:
         - Category Management
-      summary: Get a specific task's information
+      summary: Get a specific category's information
       operationId: getCategoryByUUID
       parameters:
         - name: uuid
@@ -130,6 +192,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -168,6 +232,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -180,6 +246,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+  #
+  #
+  #
+  #
+  #
   /v1/tasks/:
     get:
       tags:
@@ -208,6 +279,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '401':
+          description: Unauthorized
         '500':
           description: Internal error has occurred
           content:
@@ -238,6 +311,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -274,6 +349,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -313,6 +390,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -351,6 +430,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -390,6 +471,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -416,6 +499,8 @@ paths:
           schema:
             type: string
             format: uuid
+      security:
+        - OpenID: [admin]
       responses:
         '200':
           description: OK
@@ -429,6 +514,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -472,6 +559,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
           content:
@@ -517,6 +606,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+
         '404':
           description: Not Found
           content:
@@ -535,7 +625,21 @@ paths:
 #
 #
 #
+
+security:
+  - OpenID:
+      - user
+      - admin
+#
+#
+#
+#
+#
 components:
+  securitySchemes:
+    OpenID:
+      type: openIdConnect
+      openIdConnectUrl: http://keycloak.trullingham.com/auth/realms/TodoProject/.well-known/openid-configuration
   schemas:
     ErrorDetails:
       type: object
@@ -568,9 +672,14 @@ components:
           type: string
         description:
           type: string
+        color:
+          type: string
+          pattern: '^#[A-Fa-f0-9]{6}$'
+          example: "#000000"
         createdByUserUuid:
           type: string
           format: uuid
+          readOnly: true
         createdDate:
           type: string
           format: date-time
@@ -655,10 +764,14 @@ components:
         createdByUserUuid:
           type: string
           format: uuid
+          readOnly: true
         assignedToUserUuid:
           type: string
           format: uuid
         workspaceUuid:
+          type: string
+          format: uuid
+        categoryUuid:
           type: string
           format: uuid
         priority:

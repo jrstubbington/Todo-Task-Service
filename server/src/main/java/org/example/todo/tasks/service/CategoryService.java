@@ -66,6 +66,15 @@ public class CategoryService {
 		categoryRepository.saveAndFlush(category);
 	}
 
+	public List<Category> findCategoriesByWorkspaceUuid(UUID uuid) {
+		return categoryRepository.findByWorkspaceUuid(uuid);
+	}
+
+	public ResponseContainerCategoryDto findCategoriesByWorkspaceUuidResponse(UUID uuid) {
+		return ResponseUtils.convertToDtoResponseContainer(findCategoriesByWorkspaceUuid(uuid), CategoryDto.class, ResponseContainerCategoryDto.class);
+
+	}
+
 	@Transactional
 	public void addTaskToCategory(Category category, Task task) {
 
@@ -92,8 +101,9 @@ public class CategoryService {
 		Category category = Category.builder()
 				.name(categoryDto.getName())
 				.description(categoryDto.getDescription())
-				.createdByUserUuid(categoryDto.getCreatedByUserUuid())
+				.createdByUserUuid(categoryDto.getCreatedByUserUuid()) //TODO: Change to authenticated user id
 				.workspaceUuid(workspaceUuid)
+				.color(categoryDto.getColor())
 				.build();
 		Category savedCategory = categoryRepository.saveAndFlush(category);
 

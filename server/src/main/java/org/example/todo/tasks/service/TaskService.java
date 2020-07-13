@@ -80,6 +80,7 @@ public class TaskService {
 			task.setName(taskDto.getName());
 			task.setDescription(taskDto.getDescription());
 			task.setPriority(taskDto.getPriority());
+			task.setStatus(taskDto.getStatus());
 			task.setWorkspaceUuid(taskDto.getWorkspaceUuid());
 			task.setReminderDate(taskDto.getReminderDate());
 
@@ -119,7 +120,7 @@ public class TaskService {
 		Category category = categoryService.findCategoryByUuid(categoryUuid);
 		Task task = new Task();
 		task.setCategory(category);
-		task.setCreatedByUserUuid(taskDto.getCreatedByUserUuid());
+		task.setCreatedByUserUuid(taskDto.getCreatedByUserUuid()); //TODO: Change to authenticated user id
 		task.setAssignedToUserUuid(taskDto.getAssignedToUserUuid());
 		task.setStatus(taskDto.getStatus());
 		task.setName(taskDto.getName());

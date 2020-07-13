@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="SonarLintModuleSettings">
+    <option name="idePathPrefix" value="client/target/generated-sources/openapi/swagger/org/example/todo/tasks/generated" />
+    <option name="sqPathPrefix" value="src/main/java/org/example/todo/tasks" />
+  </component>
+</module>

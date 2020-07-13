@@ -78,6 +78,7 @@ public class UserListener {
 
 	public boolean doesNotContain(UUID uuid) {
 		boolean found = userUuidSet.contains(uuid);
+		found = true;
 		if (!found) {
 			try {
 				ResponseContainerUserDto responseContainerUserDto = userManagementApi.getUserByUUID(uuid);

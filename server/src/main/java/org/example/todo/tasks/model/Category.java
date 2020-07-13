@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -58,6 +59,9 @@ public class Category implements Serializable {
 	private String description;
 
 	private UUID createdByUserUuid;
+
+	@Pattern(regexp = "^#[A-Fa-f0-9]{6}$")
+	private String color;
 
 	@CreatedDate
 	private OffsetDateTime createdDate;

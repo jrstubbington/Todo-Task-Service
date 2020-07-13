@@ -10,7 +10,7 @@ spring:
 
   ## Spring Datasource passed in via environment variables
   datasource:
-    url:
+    url: jdbc:mysql://${DATABASE_URL}:${DATABASE_PORT}/tasks?useUnicode=yes&useSSL=false&characterEncoding=UTF-8
     username:
     password:
 
@@ -29,13 +29,6 @@ spring:
 
 server:
   shutdown: graceful
-
-springdoc:
-  show-actuator: true
-  swagger-ui:
-    doc-expansion: none
-    operationsSorter: method
-    tagsSorter: alpha
 
 management:
   health:

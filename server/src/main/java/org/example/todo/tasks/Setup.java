@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,11 +56,14 @@ public class Setup {
 				log.info("UserUUID {}", userUuid);
 				log.info("WorkspaceUUID {}", workspaceUuid);
 
+				Color color = Color.BLUE;
+				String hexColor = "#"+Integer.toHexString(color.getRGB()).substring(2);
 				Category category = Category.builder()
 						.name("My Test Category")
 						.description("This is a testing category for testing")
 						.createdByUserUuid(userUuid)
 						.workspaceUuid(workspaceUuid)
+						.color(hexColor)
 						.build();
 
 				Task task = Task.builder()

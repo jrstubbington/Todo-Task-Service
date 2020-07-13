@@ -45,7 +45,7 @@ public class WorkLogController implements WorkLogManagementApi {
 	 * or Internal error has occurred (status code 500)
 	 */
 	@Override
-	public ResponseEntity<ResponseContainerWorkLogEntryDto> updateWorkLog(@Valid WorkLogEntryDto workLogEntryDto) throws Exception {
+	public ResponseEntity<ResponseContainerWorkLogEntryDto> updateWorkLog(@Valid WorkLogEntryDto workLogEntryDto) {
 		return ResponseEntity.ok(workLogService.updateWorkLogEntryResponse(workLogEntryDto));
 	}
 
