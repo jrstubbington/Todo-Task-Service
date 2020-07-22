@@ -25,14 +25,18 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
 @Api(tags = "Task Management")
 @Validated
 @Slf4j
-@CrossOrigin
+@CrossOrigin(value = "*")
 public class TaskController implements TaskManagementApi {
+
+	//TODO: The link below may solve the issue of getting the Principle object. The current method isn't that bad though
+	//	https://github.com/OpenAPITools/openapi-generator/issues/4680
 
 	private TaskService taskService;
 
@@ -54,16 +58,13 @@ public class TaskController implements TaskManagementApi {
 	@Override
 	@RolesAllowed("admin")
 	public ResponseEntity<ResponseContainerTaskDto> getTaskListByUserUuid(UUID uuid) {
-		Pair<String, AccessToken> authToken = processAccessToken();
-		UUID userUuid = UUID.fromString(authToken.getKey());
-		return ResponseEntity.ok(taskService.getAllTasksByUserUuidResponse(userUuid));
+		return ResponseEntity.ok(taskService.getAllTasksByUserUuidResponse(uuid));
 	}
 
 	@Override
-	@RolesAllowed("admin")
+//	@RolesAllowed("admin")
 	public ResponseEntity<ResponseContainerTaskDto> getTasks(@Valid Integer page, @Valid Integer pageSize) {
-//		Pair<String, AccessToken> authToken = processAccessToken();
-//		UUID userUuid = UUID.fromString(authToken.getKey());
+		Pair<UUID, AccessToken> authToken = processAccessToken();
 		return ResponseEntity.ok(taskService.getAllTasksResponse(PageRequest.of(page, pageSize)));
 	}
 
@@ -87,12 +88,15 @@ public class TaskController implements TaskManagementApi {
 	}
 
 	//TODO: Move to utility package
-	private Pair<String, AccessToken> processAccessToken() {
+	private Pair<UUID, AccessToken> processAccessToken() {
 		KeycloakAuthenticationToken token = (KeycloakAuthenticationToken) request.getUserPrincipal();
-		@SuppressWarnings("unchecked")
-		KeycloakPrincipal<KeycloakSecurityContext> principal = (KeycloakPrincipal<KeycloakSecurityContext>)token.getPrincipal();
-		KeycloakSecurityContext session = principal.getKeycloakSecurityContext();
-		return new ImmutablePair<>(principal.getName(), session.getToken());
+		if (Objects.nonNull(token)) {
+			@SuppressWarnings("unchecked")
+			KeycloakPrincipal<KeycloakSecurityContext> principal = (KeycloakPrincipal<KeycloakSecurityContext>) token.getPrincipal();
+			KeycloakSecurityContext session = principal.getKeycloakSecurityContext();
+			return new ImmutablePair<>(UUID.fromString(principal.getName()), session.getToken());
+		}
+		return new ImmutablePair<>(UUID.randomUUID(), new AccessToken());
 	}
 
 

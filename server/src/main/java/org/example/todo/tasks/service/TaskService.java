@@ -161,6 +161,11 @@ public class TaskService {
 		return ResponseUtils.convertToDtoResponseContainer(new ArrayList<>(getAllTasksByUserUuid(userUuid)), TaskDto.class, ResponseContainerTaskDto.class);
 	}
 
+	@Transactional
+	public List<Task> getTasksByCategoryUUID(UUID categoryUuid) {
+		return taskRepository.findAllByCategory_Uuid(categoryUuid);
+	}
+
 	@Autowired
 	public void setTaskRepository(TaskRepository taskRepository) {
 		this.taskRepository = taskRepository;

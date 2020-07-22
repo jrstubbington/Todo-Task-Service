@@ -8,6 +8,8 @@ import org.example.todo.common.kafka.KafkaProducer;
 import org.example.todo.common.util.ResponseUtils;
 import org.example.todo.tasks.generated.dto.CategoryDto;
 import org.example.todo.tasks.generated.dto.ResponseContainerCategoryDto;
+import org.example.todo.tasks.generated.dto.ResponseContainerTaskDto;
+import org.example.todo.tasks.generated.dto.TaskDto;
 import org.example.todo.tasks.listener.UserListener;
 import org.example.todo.tasks.listener.WorkspaceListener;
 import org.example.todo.tasks.model.Category;
@@ -34,6 +36,8 @@ public class CategoryService {
 	private WorkspaceListener workspaceListener;
 
 	private UserListener userListener;
+
+	private TaskService taskService;
 
 	private KafkaProducer<CategoryDto> kafkaProducer;
 
@@ -101,7 +105,7 @@ public class CategoryService {
 		Category category = Category.builder()
 				.name(categoryDto.getName())
 				.description(categoryDto.getDescription())
-				.createdByUserUuid(categoryDto.getCreatedByUserUuid()) //TODO: Change to authenticated user id
+				.createdByUserUuid(UUID.randomUUID()) //TODO: Change to authenticated user id
 				.workspaceUuid(workspaceUuid)
 				.color(categoryDto.getColor())
 				.build();
@@ -119,9 +123,19 @@ public class CategoryService {
 		return ResponseUtils.convertToDtoResponseContainer(createCategory(categoryDto), CategoryDto.class, ResponseContainerCategoryDto.class);
 	}
 
+	public ResponseContainerTaskDto getTasksByCategoryUUIDResponse(UUID uuid) {
+		return ResponseUtils.convertToDtoResponseContainer(taskService.getTasksByCategoryUUID(uuid), TaskDto.class, ResponseContainerTaskDto.class);
+	}
+
 	@Autowired
 	public void setCategoryRepository(CategoryRepository categoryRepository) {
 		this.categoryRepository = categoryRepository;
+	}
+
+
+	@Autowired
+	public void setTaskService(TaskService taskService) {
+		this.taskService = taskService;
 	}
 
 	@Autowired

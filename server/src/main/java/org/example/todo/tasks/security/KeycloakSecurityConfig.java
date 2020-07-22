@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
-@Profile("local")
+@Profile("security")
 public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
 	@Override
@@ -35,6 +35,8 @@ public class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter
 				.antMatchers("/").permitAll()
 				.antMatchers("/csrf").permitAll()
 				.anyRequest().authenticated();
+//		http.headers().addHeaderWriter(
+//				new StaticHeadersWriter("Access-Control-Allow-Origin", "*"));
 	}
 
 	@Override

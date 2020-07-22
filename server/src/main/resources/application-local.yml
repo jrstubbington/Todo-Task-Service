@@ -4,21 +4,17 @@ server:
 logging:
   config: classpath:log4j2.xml
 
-security:
-  basic:
-    enabled: false
-management:
-  security:
-    enabled: false
-
 keycloak:
+#  cors-origins:
+#    - '*'
+#  enable-cors: true
   auth-server-url: http://keycloak.trullingham.com/auth
   realm: TodoProject
   resource: my-spring-boot-client
   credentials:
     secret: 59579f80-727f-4981-8df7-d71cdb7b8b2e
-  public-client: true
+#  public-client: true
   ssl-required: external
   use-resource-role-mappings: true
-  bearer-only: false
+  bearer-only: true
 #  principal-attribute: preferred_username

@@ -246,6 +246,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDetails'
+  '/v1/categories/{uuid}/tasks':
+    get:
+      tags:
+        - Category Management
+      summary: Get a specific category's list of tasks
+      operationId: getTasksByCategoryUUID
+      parameters:
+        - name: uuid
+          in: path
+          description: Category uuid to get task object with
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseContainerTaskDto'
+        '400':
+          description: Client Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        '500':
+          description: Internal error has occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
   #
   #
   #
@@ -627,9 +668,13 @@ paths:
 #
 
 security:
-  - OpenID:
+  # - OpenID:
+  #     - user
+  #     - admin
+  - OAuth:
       - user
       - admin
+
 #
 #
 #
@@ -640,6 +685,22 @@ components:
     OpenID:
       type: openIdConnect
       openIdConnectUrl: http://keycloak.trullingham.com/auth/realms/TodoProject/.well-known/openid-configuration
+    OAuth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://keycloak.trullingham.com/auth/realms/TodoProject/protocol/openid-connect/auth
+          scopes: {}
+    # oAuth2NoScopes:
+    #   type: oauth2
+    #   description: 'keycload login TODO tp: Change realm!'
+    #   authorizationUrl: 'https://localhost:8443/auth/realms/zap/protocol/openid-connect/auth'
+    #   tokenUrl: 'https://localhost:8443/auth/realms/zap/protocol/openid-connect/token'
+    #   flows: implicit
+    #   scopes:
+    #       registry: admin right to registry
+    #       dummy: dummy scope
+
   schemas:
     ErrorDetails:
       type: object

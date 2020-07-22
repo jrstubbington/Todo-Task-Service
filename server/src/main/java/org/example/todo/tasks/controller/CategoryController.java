@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.todo.tasks.generated.controller.CategoryManagementApi;
 import org.example.todo.tasks.generated.dto.CategoryDto;
 import org.example.todo.tasks.generated.dto.ResponseContainerCategoryDto;
+import org.example.todo.tasks.generated.dto.ResponseContainerTaskDto;
 import org.example.todo.tasks.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +39,21 @@ public class CategoryController implements CategoryManagementApi {
 	@Override
 	public ResponseEntity<ResponseContainerCategoryDto> getCategoryByUUID(UUID uuid) {
 		return ResponseEntity.ok(categoryService.findCategoryByUuidResponse(uuid));
+	}
+
+	/**
+	 * GET /v1/categories/{uuid}/tasks : Get a specific category&#39;s list of tasks
+	 *
+	 * @param uuid Category uuid to get task object with (required)
+	 * @return OK (status code 200)
+	 * or Client Error (status code 400)
+	 * or Unauthorized (status code 401)
+	 * or Not Found (status code 404)
+	 * or Internal error has occurred (status code 500)
+	 */
+	@Override
+	public ResponseEntity<ResponseContainerTaskDto> getTasksByCategoryUUID(UUID uuid) {
+		return ResponseEntity.ok(categoryService.getTasksByCategoryUUIDResponse(uuid));
 	}
 
 	/**
